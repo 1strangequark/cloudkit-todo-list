@@ -73,10 +73,14 @@ struct ContentView: View {
                     ForEach(sharedContacts) { contactRowView(for: $0, isChecked: checkedItems.contains($0.recordID), shareable: false) }
                 }
             case .error(let error):
-                VStack {
-                    Text("An error occurred: \(error.localizedDescription)").padding()
-                    Spacer()
+                List {
+
                 }
+//                 This is helpful for debugging purposes
+//                VStack {
+//                    Text("An error occurred: \(error.localizedDescription)").padding()
+//                    Spacer()
+//                }
 
             case .loading:
                 VStack { ProgressView().progressViewStyle(CircularProgressViewStyle()) }
@@ -125,6 +129,7 @@ struct ContentView: View {
         checkedItems.insert(contact.recordID)
         await Task.sleep(1 * 1_000_000_000)
         await vm.markAsChecked(contact)
+        try await vm.initialize()
         try await vm.refresh()
     }
 

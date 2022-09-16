@@ -32,6 +32,7 @@ final class ViewModel: ObservableObject {
     lazy var container = CKContainer(identifier: Config.containerIdentifier)
     /// This project uses the user's private database.
     private lazy var database = container.privateCloudDatabase
+    private lazy var sharedDatabase = container.sharedCloudDatabase
     /// Sharing requires using a custom record zone.
     let recordZone = CKRecordZone(zoneName: "Contacts")
 
@@ -74,7 +75,13 @@ final class ViewModel: ObservableObject {
     }
     
     public func markAsChecked(_ contact: Contact) async -> Void {
+        await removeShare(recordID: contact.associatedRecord.share!.recordID)
         await removeContact(recordID: contact.recordID)
+//        if (contact.associatedRecord.share?.recordID != nil) {
+//
+//        } else {
+//
+//        }
     }
 
     func addContact(name: String) async throws {
@@ -87,6 +94,16 @@ final class ViewModel: ObservableObject {
     
     func removeContact(recordID: CKRecord.ID) async {
          database.delete(withRecordID: recordID) { record, error in
+             guard error == nil else {
+                 print(error ?? "")
+                 return
+             }
+             print("Record deleted successfully")
+         }
+    }
+    
+    func removeShare(recordID: CKRecord.ID) async {
+         sharedDatabase.delete(withRecordID: recordID) { record, error in
              guard error == nil else {
                  print(error ?? "")
                  return
@@ -178,6 +195,7 @@ final class ViewModel: ObservableObject {
     /// Creates the custom zone in use if needed.
     private func createZoneIfNeeded() async throws {
         // Avoid the operation if this has already been done.
+        // TODO: JONATHAN. I had to remove this because it wasn't creating a zone when it was supposed to
         guard !UserDefaults.standard.bool(forKey: "isZoneCreated") else {
             return
         }
