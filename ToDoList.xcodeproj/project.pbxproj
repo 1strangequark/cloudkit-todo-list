@@ -30,7 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		F415D54E260A602F002C3249 /* Sharing.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sharing.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F415D54E260A602F002C3249 /* ToDoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F415D551260A602F002C3249 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F415D553260A602F002C3249 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		F415D557260A6032002C3249 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -43,7 +43,7 @@
 		F415D571260A616D002C3249 /* AddContactView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddContactView.swift; sourceTree = "<group>"; };
 		F415D575260A6174002C3249 /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		F415D577260A61C7002C3249 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
-		F415D57D26115C8B002C3249 /* SharingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SharingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F415D57D26115C8B002C3249 /* ToDoListTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ToDoListTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,8 +77,8 @@
 		F415D54F260A602F002C3249 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F415D54E260A602F002C3249 /* Sharing.app */,
-				F415D57D26115C8B002C3249 /* SharingTests.xctest */,
+				F415D54E260A602F002C3249 /* ToDoList.app */,
+				F415D57D26115C8B002C3249 /* ToDoListTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -144,9 +144,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F415D54D260A602F002C3249 /* Sharing */ = {
+		F415D54D260A602F002C3249 /* ToDoList */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F415D562260A6032002C3249 /* Build configuration list for PBXNativeTarget "Sharing" */;
+			buildConfigurationList = F415D562260A6032002C3249 /* Build configuration list for PBXNativeTarget "ToDoList" */;
 			buildPhases = (
 				F415D54A260A602F002C3249 /* Sources */,
 				F415D54B260A602F002C3249 /* Frameworks */,
@@ -156,14 +156,14 @@
 			);
 			dependencies = (
 			);
-			name = Sharing;
+			name = ToDoList;
 			productName = Sharing;
-			productReference = F415D54E260A602F002C3249 /* Sharing.app */;
+			productReference = F415D54E260A602F002C3249 /* ToDoList.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F415D57C26115C8B002C3249 /* SharingTests */ = {
+		F415D57C26115C8B002C3249 /* ToDoListTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F415D58626115C8B002C3249 /* Build configuration list for PBXNativeTarget "SharingTests" */;
+			buildConfigurationList = F415D58626115C8B002C3249 /* Build configuration list for PBXNativeTarget "ToDoListTests" */;
 			buildPhases = (
 				F415D57926115C8B002C3249 /* Sources */,
 				F415D57A26115C8B002C3249 /* Frameworks */,
@@ -174,9 +174,9 @@
 			dependencies = (
 				F415D58326115C8B002C3249 /* PBXTargetDependency */,
 			);
-			name = SharingTests;
+			name = ToDoListTests;
 			productName = SharingTests;
-			productReference = F415D57D26115C8B002C3249 /* SharingTests.xctest */;
+			productReference = F415D57D26115C8B002C3249 /* ToDoListTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -197,7 +197,7 @@
 					};
 				};
 			};
-			buildConfigurationList = F415D549260A602F002C3249 /* Build configuration list for PBXProject "Sharing" */;
+			buildConfigurationList = F415D549260A602F002C3249 /* Build configuration list for PBXProject "ToDoList" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -210,8 +210,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F415D54D260A602F002C3249 /* Sharing */,
-				F415D57C26115C8B002C3249 /* SharingTests */,
+				F415D54D260A602F002C3249 /* ToDoList */,
+				F415D57C26115C8B002C3249 /* ToDoListTests */,
 			);
 		};
 /* End PBXProject section */
@@ -262,7 +262,7 @@
 /* Begin PBXTargetDependency section */
 		F415D58326115C8B002C3249 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F415D54D260A602F002C3249 /* Sharing */;
+			target = F415D54D260A602F002C3249 /* ToDoList */;
 			targetProxy = F415D58226115C8B002C3249 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -441,7 +441,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sharing.app/Sharing";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ToDoList.app/ToDoList";
 			};
 			name = Debug;
 		};
@@ -460,14 +460,14 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Sharing.app/Sharing";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ToDoList.app/ToDoList";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F415D549260A602F002C3249 /* Build configuration list for PBXProject "Sharing" */ = {
+		F415D549260A602F002C3249 /* Build configuration list for PBXProject "ToDoList" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F415D560260A6032002C3249 /* Debug */,
@@ -476,7 +476,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F415D562260A6032002C3249 /* Build configuration list for PBXNativeTarget "Sharing" */ = {
+		F415D562260A6032002C3249 /* Build configuration list for PBXNativeTarget "ToDoList" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F415D563260A6032002C3249 /* Debug */,
@@ -485,7 +485,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F415D58626115C8B002C3249 /* Build configuration list for PBXNativeTarget "SharingTests" */ = {
+		F415D58626115C8B002C3249 /* Build configuration list for PBXNativeTarget "ToDoListTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F415D58426115C8B002C3249 /* Debug */,

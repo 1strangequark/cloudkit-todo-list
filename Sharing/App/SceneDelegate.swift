@@ -10,6 +10,7 @@ import CloudKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    @Published var receivedAShare = false
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         let contentView = ContentView().environmentObject(ViewModel())
@@ -50,6 +51,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             if case .failure(let error) = result {
                 debugPrint("Error accepting CloudKit Share: \(error)")
             }
+            
         }
 
         operation.qualityOfService = .utility

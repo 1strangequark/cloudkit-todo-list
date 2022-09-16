@@ -1,6 +1,7 @@
 {
   "images" : [
     {
+      "filename" : "rsz_1rsz_1unnamed-2.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "20x20"
@@ -26,16 +27,19 @@
       "size" : "40x40"
     },
     {
+      "filename" : "rsz_unnamed-2 1.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "40x40"
     },
     {
+      "filename" : "rsz_unnamed-2.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "60x60"
     },
     {
+      "filename" : "rsz_1rsz_1unnamed-2-2.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "60x60"

@@ -39,7 +39,7 @@ struct CloudSharingView: UIViewControllerRepresentable {
         }
 
         func itemTitle(for csc: UICloudSharingController) -> String? {
-            "Sharing Example"
+            "To Do Item"
         }
     }
 }

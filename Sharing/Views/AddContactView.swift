@@ -1,13 +1,13 @@
 //
-//  AddContactView.swift
+//  AddToDoView.swift
 //  (cloudkit-samples) Sharing
 //
 
 import Foundation
 import SwiftUI
 
-/// View for adding new contacts.
-struct AddContactView: View {
+/// View for adding new toDos.
+struct AddToDoView: View {
     @State private var nameInput: String = ""
 
     let onAdd: ((String) async throws -> Void)?

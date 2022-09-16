@@ -20,7 +20,7 @@ final class ViewModel: ObservableObject {
 
     enum State {
         case loading
-        case loaded(private: [Contact], shared: [Contact])
+        case loaded(private: [ToDo], shared: [ToDo])
         case error(Error)
     }
 
@@ -34,7 +34,7 @@ final class ViewModel: ObservableObject {
     private lazy var database = container.privateCloudDatabase
     private lazy var sharedDatabase = container.sharedCloudDatabase
     /// Sharing requires using a custom record zone.
-    let recordZone = CKRecordZone(zoneName: "Contacts")
+    let recordZone = CKRecordZone(zoneName: "ToDos")
 
     // MARK: - Init
 
@@ -50,73 +50,73 @@ final class ViewModel: ObservableObject {
     /// Prepares container by creating custom zone if needed.
     func initialize() async throws {
         do {
-            try await createZoneIfNeeded()
+            try await createZoneIfNeeded(overrride: false)
         } catch {
             state = .error(error)
         }
     }
 
-    /// Fetches contacts from the remote databases and updates local state.
+    /// Fetches toDos from the remote databases and updates local state.
     func refresh() async throws {
         state = .loading
         do {
-            let (privateContacts, sharedContacts) = try await fetchPrivateAndSharedContacts()
-            state = .loaded(private: privateContacts, shared: sharedContacts)
+            let (privateToDos, sharedToDos) = try await fetchPrivateAndSharedToDos()
+            state = .loaded(private: privateToDos, shared: sharedToDos)
         } catch {
             state = .error(error)
         }
     }
 
-    func fetchPrivateAndSharedContacts() async throws -> (private: [Contact], shared: [Contact]) {
-        async let privateContacts = fetchContacts(scope: .private, in: [recordZone])
-        async let sharedContacts = fetchSharedContacts()
+    func fetchPrivateAndSharedToDos() async throws -> (private: [ToDo], shared: [ToDo]) {
+        async let privateToDos = fetchToDos(scope: .private, in: [recordZone])
+        async let sharedToDos = fetchSharedToDos()
 
-        return (private: try await privateContacts, shared: try await sharedContacts)
+        return (private: try await privateToDos, shared: try await sharedToDos)
     }
     
-    public func markAsChecked(_ contact: Contact) async -> Void {
-        await removeShare(recordID: contact.associatedRecord.share!.recordID)
-        await removeContact(recordID: contact.recordID)
-//        if (contact.associatedRecord.share?.recordID != nil) {
-//
-//        } else {
-//
-//        }
+    public func markAsChecked(_ toDo: ToDo) async {
+        if (toDo.associatedRecord.share?.recordID != nil) {
+            await removeShare(recordID: toDo.associatedRecord.share!.recordID)
+        }
+        await removeToDo(recordID: toDo.recordID)
     }
 
-    func addContact(name: String) async throws {
+    func addToDo(name: String) async throws {
         let id = CKRecord.ID(zoneID: recordZone.zoneID)
-        let contactRecord = CKRecord(recordType: "Contact", recordID: id)
-        contactRecord["name"] = name
+        let toDoRecord = CKRecord(recordType: "ToDo", recordID: id)
+        toDoRecord["name"] = name
 
-        try await database.save(contactRecord)
+        try await database.save(toDoRecord)
     }
     
-    func removeContact(recordID: CKRecord.ID) async {
-         database.delete(withRecordID: recordID) { record, error in
-             guard error == nil else {
-                 print(error ?? "")
-                 return
-             }
-             print("Record deleted successfully")
-         }
+    func removeToDo(recordID: CKRecord.ID) async {
+        do {
+            _ = try await database.modifyRecords(saving: [], deleting: [recordID])
+        } catch {
+            print(error)
+        }
     }
     
     func removeShare(recordID: CKRecord.ID) async {
-         sharedDatabase.delete(withRecordID: recordID) { record, error in
-             guard error == nil else {
-                 print(error ?? "")
-                 return
-             }
-             print("Record deleted successfully")
-         }
+        do {
+            _ = try await sharedDatabase.modifyRecords(saving: [], deleting: [recordID])
+        } catch {
+            print(error)
+        }
+//         sharedDatabase.delete(withRecordID: recordID) { record, error in
+//             guard error == nil else {
+//                 print(error ?? "")
+//                 return
+//             }
+//             print("Record deleted successfully")
+//         }
     }
 
-    func fetchOrCreateShare(contact: Contact) async throws -> (CKShare, CKContainer) {
-        guard let existingShare = contact.associatedRecord.share else {
-            let share = CKShare(rootRecord: contact.associatedRecord)
-            share[CKShare.SystemFieldKey.title] = "Contact: \(contact.name)"
-            _ = try await database.modifyRecords(saving: [contact.associatedRecord, share], deleting: [])
+    func fetchOrCreateShare(toDo: ToDo) async throws -> (CKShare, CKContainer) {
+        guard let existingShare = toDo.associatedRecord.share else {
+            let share = CKShare(rootRecord: toDo.associatedRecord)
+            share[CKShare.SystemFieldKey.title] = "ToDo: \(toDo.name)"
+            _ = try await database.modifyRecords(saving: [toDo.associatedRecord, share], deleting: [])
             return (share, container)
         }
 
@@ -129,21 +129,21 @@ final class ViewModel: ObservableObject {
 
     // MARK: - Private
 
-    /// Fetches contacts for a given set of zones in a given database scope.
+    /// Fetches toDos for a given set of zones in a given database scope.
     /// - Parameters:
     ///   - scope: Database scope to fetch from.
-    ///   - zones: Record zones to fetch contacts from.
-    /// - Returns: Combined set of contacts across all given zones.
-    private func fetchContacts(
+    ///   - zones: Record zones to fetch toDos from.
+    /// - Returns: Combined set of toDos across all given zones.
+    private func fetchToDos(
         scope: CKDatabase.Scope,
         in zones: [CKRecordZone]
-    ) async throws -> [Contact] {
+    ) async throws -> [ToDo] {
         let database = container.database(with: scope)
-        var allContacts: [Contact] = []
+        var allToDos: [ToDo] = []
 
-        // Inner function retrieving and converting all Contact records for a single zone.
-        @Sendable func contactsInZone(_ zone: CKRecordZone) async throws -> [Contact] {
-            var allContacts: [Contact] = []
+        // Inner function retrieving and converting all ToDo records for a single zone.
+        @Sendable func toDosInZone(_ zone: CKRecordZone) async throws -> [ToDo] {
+            var allToDos: [ToDo] = []
 
             /// `recordZoneChanges` can return multiple consecutive changesets before completing, so
             /// we use a loop to process multiple results if needed, indicated by the `moreComing` flag.
@@ -153,47 +153,47 @@ final class ViewModel: ObservableObject {
 
             while awaitingChanges {
                 let zoneChanges = try await database.recordZoneChanges(inZoneWith: zone.zoneID, since: nextChangeToken)
-                let contacts = zoneChanges.modificationResultsByID.values
+                let toDos = zoneChanges.modificationResultsByID.values
                     .compactMap { try? $0.get().record }
-                    .compactMap { Contact(record: $0) }
-                allContacts.append(contentsOf: contacts)
+                    .compactMap { ToDo(record: $0) }
+                allToDos.append(contentsOf: toDos)
 
                 awaitingChanges = zoneChanges.moreComing
                 nextChangeToken = zoneChanges.changeToken
             }
 
-            return allContacts
+            return allToDos
         }
 
-        // Using this task group, fetch each zone's contacts in parallel.
-        try await withThrowingTaskGroup(of: [Contact].self) { group in
+        // Using this task group, fetch each zone's toDos in parallel.
+        try await withThrowingTaskGroup(of: [ToDo].self) { group in
             for zone in zones {
                 group.addTask {
-                    try await contactsInZone(zone)
+                    try await toDosInZone(zone)
                 }
             }
 
             // As each result comes back, append it to a combined array to finally return.
-            for try await contactsResult in group {
-                allContacts.append(contentsOf: contactsResult)
+            for try await toDosResult in group {
+                allToDos.append(contentsOf: toDosResult)
             }
         }
 
-        return allContacts
+        return allToDos
     }
 
-    /// Fetches all shared Contacts from all available record zones.
-    private func fetchSharedContacts() async throws -> [Contact] {
+    /// Fetches all shared ToDos from all available record zones.
+    private func fetchSharedToDos() async throws -> [ToDo] {
         let sharedZones = try await container.sharedCloudDatabase.allRecordZones()
         guard !sharedZones.isEmpty else {
             return []
         }
 
-        return try await fetchContacts(scope: .shared, in: sharedZones)
+        return try await fetchToDos(scope: .shared, in: sharedZones)
     }
 
     /// Creates the custom zone in use if needed.
-    private func createZoneIfNeeded() async throws {
+    private func createZoneIfNeeded(overrride:Bool) async throws {
         // Avoid the operation if this has already been done.
         // TODO: JONATHAN. I had to remove this because it wasn't creating a zone when it was supposed to
         guard !UserDefaults.standard.bool(forKey: "isZoneCreated") else {

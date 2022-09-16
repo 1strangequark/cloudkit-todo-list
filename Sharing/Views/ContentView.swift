@@ -10,7 +10,7 @@ struct ContentView: View {
 
     @EnvironmentObject private var vm: ViewModel
 
-    @State private var isAddingContact = false
+    @State private var isAddingToDo = false
     @State private var isSharing = false
     @State private var isProcessingShare = false
 
@@ -30,7 +30,7 @@ struct ContentView: View {
                         progressView
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: { isAddingContact = true }) { Image(systemName: "plus") }
+                        Button(action: { isAddingToDo = true }) { Image(systemName: "plus") }
                     }
                 }
         }
@@ -41,8 +41,8 @@ struct ContentView: View {
                 try await vm.refresh()
             }
         }
-        .sheet(isPresented: $isAddingContact, content: {
-            AddContactView(onAdd: addContact, onCancel: { isAddingContact = false })
+        .sheet(isPresented: $isAddingToDo, content: {
+            AddToDoView(onAdd: addToDo, onCancel: { isAddingToDo = false })
         })
     }
 
@@ -67,20 +67,20 @@ struct ContentView: View {
     private var contentView: some View {
         Group {
             switch vm.state {
-            case let .loaded(privateContacts, sharedContacts):
+            case let .loaded(privateToDos, sharedToDos):
                 List {
-                    ForEach(privateContacts) { contactRowView(for: $0, isChecked: checkedItems.contains($0.recordID)) }
-                    ForEach(sharedContacts) { contactRowView(for: $0, isChecked: checkedItems.contains($0.recordID), shareable: false) }
+                    ForEach(privateToDos) { toDoRowView(for: $0, isChecked: checkedItems.contains($0.recordID)) }
+                    ForEach(sharedToDos) { toDoRowView(for: $0, isChecked: checkedItems.contains($0.recordID), shareable: false) }
                 }
             case .error(let error):
-                List {
-
-                }
-//                 This is helpful for debugging purposes
-//                VStack {
-//                    Text("An error occurred: \(error.localizedDescription)").padding()
-//                    Spacer()
+//                List {
+//
 //                }
+//                 This is helpful for debugging purposes
+                VStack {
+                    Text("An error occurred: \(error.localizedDescription)").padding()
+                    Spacer()
+                }
 
             case .loading:
                 VStack { ProgressView().progressViewStyle(CircularProgressViewStyle()) }
@@ -98,20 +98,20 @@ struct ContentView: View {
     }
 
 
-    /// Builds a Contact row view for display contact information in a List.
-    private func contactRowView(for contact: Contact, isChecked: Bool, shareable: Bool = true) -> some View {
+    /// Builds a ToDo row view for display toDo information in a List.
+    private func toDoRowView(for toDo: ToDo, isChecked: Bool, shareable: Bool = true) -> some View {
         HStack {
             Button(action: {
                 Task {
-                    try await checkOff(contact:contact)
+                    try await checkOff(toDo:toDo)
                 }
             }) {
                 Image(systemName: isChecked ? "checkmark.square" : "square")
             }
-            Text(contact.name)
+            Text(toDo.name)
             if shareable {
                 Spacer()
-                Button(action: { Task { try? await shareContact(contact) } }, label: { Image(systemName: "square.and.arrow.up") }).buttonStyle(BorderlessButtonStyle())
+                Button(action: { Task { try? await shareToDo(toDo) } }, label: { Image(systemName: "square.and.arrow.up") }).buttonStyle(BorderlessButtonStyle())
                     .sheet(isPresented: $isSharing, content: { shareView() })
             }
         }
@@ -119,47 +119,48 @@ struct ContentView: View {
 
     // MARK: - Actions
 
-    private func addContact(name: String) async throws {
-        try await vm.addContact(name: name)
+    private func addToDo(name: String) async throws {
+        try await vm.addToDo(name: name)
         try await vm.refresh()
-        isAddingContact = false
+        isAddingToDo = false
     }
     
-    private func checkOff(contact: Contact) async throws {
-        checkedItems.insert(contact.recordID)
+    private func checkOff(toDo: ToDo) async throws {
+        checkedItems.insert(toDo.recordID)
         await Task.sleep(1 * 1_000_000_000)
-        await vm.markAsChecked(contact)
-        try await vm.initialize()
+        await vm.markAsChecked(toDo)
+//        try await vm.initialize()
         try await vm.refresh()
+        
     }
 
-    private func shareContact(_ contact: Contact) async throws {
+    private func shareToDo(_ toDo: ToDo) async throws {
         isProcessingShare = true
 
         do {
-            let (share, container) = try await vm.fetchOrCreateShare(contact: contact)
+            let (share, container) = try await vm.fetchOrCreateShare(toDo: toDo)
             isProcessingShare = false
             activeShare = share
             activeContainer = container
             isSharing = true
         } catch {
-            debugPrint("Error sharing contact record: \(error)")
+            debugPrint("Error sharing toDo record: \(error)")
         }
     }
 }
 
 //struct ContentView_Previews: PreviewProvider {
-//    private static let previewContacts: [Contact] = [
-//        Contact(
+//    private static let previewToDos: [ToDo] = [
+//        ToDo(
 //            id: UUID().uuidString,
 //            recordID: CKRecord().recordID,
 //            name: "John Appleseed",
-//            associatedRecord: CKRecord(recordType: "Contact")
+//            associatedRecord: CKRecord(recordType: "ToDo")
 //        )
 //    ]
 //
 //    static var previews: some View {
 //        ContentView()
-//            .environmentObject(ViewModel(state: .loaded(private: previewContacts, shared: previewContacts)))
+//            .environmentObject(ViewModel(state: .loaded(private: previewToDos, shared: previewToDos)))
 //    }
 //}
